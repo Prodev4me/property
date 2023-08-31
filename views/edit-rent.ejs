@@ -1,0 +1,52 @@
+
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Edit Renter</h4>
+        <p class="card-description">
+          Edit Renter
+        </p>
+        <p style="color: red;"><%= error %></p>
+        <form action="/edit-rent/<%= property._id %>?_method=PATCH" method="post" class="forms-sample">
+            <div class="form-group">
+                <label for="owner">Renter</label>
+                <select class="form-control" name="owner" id="exampleSelectGender">
+                    <option><%= property.owner %></option>
+                    <% AlUser.forEach(user => { %>
+                    <option><%= user.username %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="name">Name of the Property</label>
+                <select class="form-control" name="name" id="exampleSelectGender">
+                    <option><%= property.name %></option>
+                    <% AllProp.forEach(prop => { %>
+                    <option><%= prop.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cost">Cost</label>
+                <input type="number" class="form-control" id="exampleInputPassword4" name="cost" placeholder="cost" value="<%= property.cost %>" required>
+              </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select class="form-control" name="status" id="exampleSelectGender">
+                    <option><%= property.status %></option>
+                    <option>Paid</option>
+                    <option>Pending</option>
+                    <option>Due</option>
+                </select>
+            </div>
+          <div class="form-group">
+            <label for="deadline">Deadline for Payment</label>
+            <input type="date" class="form-control" id="exampleInputPassword4" name="deadline" placeholder="Deadline Date" value="<%= property.deadline %>" required>
+          </div>
+          <button type="submit" class="btn btn-primary mr-2">Submit</button>
+          <a class="btn btn-light" href="/">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,11 @@
+<form action="/register" method="post">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="email"  name="email" placeholder="Email" required>
+    <button>Generate User</button>
+</form>
+
+<form action="/generateToken" method="post">
+    <p style="color: green;"><%= success %></p>
+    <input type="text" name="username"  placeholder="Username" required>
+    <button>Generate Token</button>
+</form>

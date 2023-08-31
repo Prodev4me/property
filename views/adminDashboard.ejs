@@ -1,0 +1,265 @@
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-md-12 grid-margin">
+          <div class="row">
+            <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+              <h3 class="font-weight-bold">Welcome <%= currentUser.username %> (Admin)</h3>
+              <h6 class="font-weight-normal mb-0">All systems are running smoothly! You have <span class="text-primary"><a onclick="changeNotice();" href="#notice"> <%= notice.length %> unread alerts!</a></span></h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 grid-margin stretch-card">
+          <div class="card tale-bg">
+            <div class="card-people mt-auto">
+              <img src="../../images/dashboard/people.svg" alt="people">
+              <div class="weather-info">
+                <div class="d-flex">
+                  <div>
+                    <h2 class="mb-0 font-weight-normal"><i class="icon-sun mr-2"></i>31<sup>C</sup></h2>
+                  </div>
+                  <div class="ml-2">
+                    <h4 class="location font-weight-normal">Proudly Built in</h4>
+                    <h6 class="font-weight-normal">Nigeria</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 grid-margin transparent">
+          <div class="row">
+            <div class="col-md-6 mb-4 stretch-card transparent">
+              <div class="card card-tale">
+                <div class="card-body">
+                  <p class="mb-4">Total Amount Paid By All Renters</p>
+                  <p class="fs-30 mb-2">$<%= paidCost %></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4 stretch-card transparent">
+              <div class="card card-dark-blue">
+                <div class="card-body">
+                  <p class="mb-4">Total Pending Rent By all Renters (Total Cost)</p>
+                  <p class="fs-30 mb-2">$<%= pendCost %></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
+              <div class="card card-light-blue">
+                <div class="card-body">
+                  <p class="mb-4">Number of Properties Rented By all Renters</p>
+                  <p class="fs-30 mb-2"><%= noProperties %></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 stretch-card transparent">
+              <div class="card card-light-danger">
+                <div class="card-body">
+                  <p class="mb-4">Total Due Rent By all Renters (Total Cost )</p>
+                  <p class="fs-30 mb-2">$<%= dueCost %></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Generate New Renter</h4>
+            <p class="card-description">
+                Register a new renter by inputting his / her email and username
+              </p>
+              <p style="color: green;"><%= success2 %></p>
+              <p style="color: red;"><%= error2 %></p>
+            <!-- generte user -->
+            <form class="form-inline" action="/register" method="post">
+              <label class="sr-only" for="username">Username</label>
+              <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Username" name="username" required>
+            
+              <label class="sr-only" for="email">Email</label>
+              <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">@</div>
+                </div>
+                <input type="email" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Email" name="email" required>
+              </div>
+              <button type="submit" class="btn btn-primary mb-2">Register Renter</button>
+            </form>
+            <!-- generate token -->
+            
+              <p class="card-description">
+                Generate a token for renter login by inputting the renter's email. <code> Note: You can only generate a token for a renter that has been registered above.</code>
+              </p>
+              <p style="color: green;"><%= success %></p>
+              <p style="color: red;"><%= error %></p>
+            <form class="form-inline"action="/generateToken" method="post">
+                <label class="sr-only" for="username">Username</label>
+                <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Username" name="username" required>
+                <button type="submit" class="btn btn-primary mb-2">Generate Token</button>
+              </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rental deatilals -->
+      <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <% if (search) { %>
+                <p class="card-title mb-0"> All Renter's Details - Search Result for <%= search %> </p>
+              <% }  else {%>
+              <p class="card-title mb-0"> All Renter's Details</p>
+              <% } %>
+              <p id="error_message" style="color: red"></p>
+              <% if (properties.length == 0) { %>
+                <p class="card-title mb-0"> No Rent Found</p>
+              <% } else { %> 
+              <div class="table-responsive">
+                <table class="table table-striped table-borderless">
+                  <thead>
+                    <tr>
+                      <th>Renter</th>
+                      <th>Property</th>
+                      <th>Price</th>
+                      <th>Deadline</th>
+                      <th>Status</th>
+                      <th>Date of Payment</th>
+                    </tr>  
+                  </thead>
+                  <tbody>
+                    <% properties.forEach(property => { %>
+                    <tr>
+                      <td><%= property.owner %></td>
+                      <td><%= property.name %></td>
+                      <td class="font-weight-bold">$<%= property.cost %></td>
+                      <td><%= property.deadline %></td>
+                      <% var type = 'success' %>
+                      <% if (property.status == "Pending") { %>
+                        <% var type = 'warning' %>
+                      <% } else if (property.status == "Due") { %>
+                        <% var type = 'danger' %>
+                      <% } %>
+                      <td class="font-weight-medium"><div class="badge badge-<%= type %>"><%= property.status %></div></td>
+                      <td>
+                      <% if (property.dateOfPayment) { %>
+                        <%= property.dateOfPayment %>
+                      <% } else { %>
+                        Nil
+                      <% } %>
+                      </td>
+                      <td class="font-weight-medium"><a href="/edit-rent/<%= property._id %>">Edit</a></td>
+                      <td> 
+                        <form action="/delete-rent/<%= property._id %>?_method=DELETE" method="POST">
+                          <input style="color: red;" type="submit" value="Delete" class="btn-delete btn">
+                        </form>
+                      </td>
+                    </tr>
+                    <% }) %>
+                    
+                  </tbody>
+                </table>
+                
+              </div>
+              <% } %>
+              <form action="/add-rent?_method=GET" method="POST">
+                <button type="submit" class="btn btn-primary mr-2">Add New Rent</button>
+              </form>
+
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <!-- end -->
+      <!-- property details -->
+      <div class="row">
+        <div class="col-md-7 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-title mb-0"> All Property Details</p>
+              <p id="error_message" style="color: red"></p>
+              <div class="table-responsive">
+                <table class="table table-striped table-borderless">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Cost</th>
+                    </tr>  
+                  </thead>
+                  <tbody>
+                    <% prop.forEach(pro => { %>
+                    <tr>
+                      <td><%= pro.name %></td>
+                      <td><%= pro.cost %></td>
+                      <td class="font-weight-medium"><a href="/edit-property/<%= pro._id %>">Edit</a></td>
+                      <td> 
+                        <form action="/delete-property/<%= pro._id %>?_method=DELETE" method="POST">
+                          <input style="color: red;" type="submit" value="Delete" class="btn-delete btn">
+                        </form>
+                      </td>
+                    </tr>
+                    <% }) %>
+                    
+                  </tbody>
+                </table>
+                
+              </div>
+              <form action="/add-property?_method=GET" method="POST">
+                <button type="submit" class="btn btn-primary mr-2">Add New Property</button>
+              </form>
+
+            </div>
+            
+          </div>
+        </div>
+        <div class="col-md-5 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <p class="card-title" id="notice">Notifications</p>
+                <% if (notice.length == 0) { %>
+                <p>No new Notifications</p>
+                <% } %>
+                <ul class="icon-data-list">
+                  <% notice.forEach(not => { %>
+                    <li>
+                      <div class="d-flex">
+                        <div>
+                          <p class="text-info mb-1"><%= not.title %></p>
+                          <p class="mb-0"><%= not.message %></p>
+                          <small><%= not.createdAt %></small>
+                        </div>
+                      </div>
+                    </li>
+                  <% }) %>
+                  
+                </ul>
+              </div>
+            </div>
+          </div>
+      </div>
+      <!-- end -->
+      
+      
+      
+    </div>
+    <!-- content-wrapper ends -->
+    <!-- partial:partials/_footer.html -->
+    <footer class="footer">
+      <div class="d-sm-flex justify-content-center justify-content-sm-between">
+        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2023.  All rights reserved.</span>
+        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
+      </div>
+    </footer>
+    <!-- partial -->
+  </div>
+  <!-- main-panel ends -->
+  
+  

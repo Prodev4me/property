@@ -1,0 +1,204 @@
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-md-12 grid-margin">
+        <div class="row">
+          <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+            <h3 class="font-weight-bold">Welcome <%= currentUser.username %></h3>
+            <h6 class="font-weight-normal mb-0">All systems are running smoothly! You have <span class="text-primary"><a onclick="changeNotice();" href="#notice"> <%= notice.length %> unread alerts!</a></span></h6>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 grid-margin stretch-card">
+        <div class="card tale-bg">
+          <div class="card-people mt-auto">
+            <img src="../../images/dashboard/people.png" alt="people">
+            <div class="weather-info">
+              <div class="d-flex">
+                <div>
+                  <h2 class="mb-0 font-weight-normal"><i class="icon-sun mr-2"></i>31<sup>C</sup></h2>
+                </div>
+                <div class="ml-2">
+                  <h4 class="location font-weight-normal">Proudly Built in</h4>
+                  <h6 class="font-weight-normal">Nigeria</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 grid-margin transparent">
+        <div class="row">
+          <div class="col-md-6 mb-4 stretch-card transparent">
+            <div class="card card-tale">
+              <div class="card-body">
+                <p class="mb-4">Total Amount Paid for Rents</p>
+                <p class="fs-30 mb-2">$<%= paidCost %></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4 stretch-card transparent">
+            <div class="card card-dark-blue">
+              <div class="card-body">
+                <p class="mb-4">Pending Rent (Total Cost)</p>
+                <p class="fs-30 mb-2">$<%= pendCost %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
+            <div class="card card-light-blue">
+              <div class="card-body">
+                <p class="mb-4">Number of Properties Rented</p>
+                <p class="fs-30 mb-2"><%= noProperties %></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 stretch-card transparent">
+            <div class="card card-light-danger">
+              <div class="card-body">
+                <p class="mb-4">Due Rent (Total Cost )</p>
+                <p class="fs-30 mb-2">$<%= dueCost %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Rental Details -->
+    <div class="row">
+      <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <% if (search) { %>
+              <p class="card-title mb-0"> <%= currentUser.username %>'s Renter Details - Search Result for <%= search %> </p>
+            <% }  else {%>
+            <p class="card-title mb-0"> <%= currentUser.username %>'s Renter Details</p>
+            <% } %>
+            <p id="error_message" style="color: red"><%= errorPayment %></p>
+            <% if (properties.length == 0) { %>
+              <p class="card-title mb-0"> No Rent Found</p>
+            <% } else { %> 
+            <div class="table-responsive">
+              <table class="table table-striped table-borderless">
+                <thead>
+                  <tr>
+                    <th>Property</th>
+                    <th>Price</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Date of Payment</th>
+                  </tr>  
+                </thead>
+                <tbody>
+                  <% properties.forEach(property => { %>
+                  <tr>
+                    <td><%= property.name %></td>
+                    <td class="font-weight-bold">$<%= property.cost %></td>
+                    <td><%= property.deadline %></td>
+                    <% var type = 'success' %>
+                    <% if (property.status == "Pending") { %>
+                      <% var type = 'warning' %>
+                    <% } else if (property.status == "Due") { %>
+                      <% var type = 'danger' %>
+                    <% } %>
+                    <td class="font-weight-medium"><div class="badge badge-<%= type %>"><%= property.status %></div></td>
+                    <td>
+                      <% if (property.dateOfPayment) { %>
+                        <%= property.dateOfPayment %>
+                      <% } else { %>
+                        Nil
+                      <% } %>
+                      </td>
+                    <% if (property.status != "Paid") { %>
+                    <td class="font-weight-medium"><a onclick="pay(`<%= property._id %>`, `<%= property.cost %>`); purchaseClicked(`<%= property._id %>`, `<%= property.cost %>`);" style="cursor:pointer">Pay</a></td>
+                    <% } %>
+                  </tr>
+                  <% }) %>
+                  
+                </tbody>
+              </table>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end -->
+
+    <div class="row">
+      <!-- property details -->
+      <div class="col-md-7 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-title mb-0"><%= currentUser.username %>'s Property Details</p>
+            <p id="error_message" style="color: red"></p>
+            <div class="table-responsive">
+              <table class="table table-striped table-borderless">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Cost</th>
+                  </tr>  
+                </thead>
+                <tbody>
+                  <% prop.forEach(pro => { %>
+                  <tr>
+                    <td><%= pro.name %></td>
+                    <td><%= pro.cost %></td>
+                  </tr>
+                  <% }) %>
+                  
+                </tbody>
+              </table>
+              
+            </div>
+
+          </div>
+          
+        </div>
+      </div>
+      <!-- end -->
+      <div class="col-md-5 stretch-card grid-margin">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-title" id="notice">Notifications</p>
+            <% if (notice.length == 0) { %>
+            <p>No new Notifications</p>
+            <% } %>
+            <ul class="icon-data-list">
+              <% notice.forEach(not => { %>
+                <li>
+                  <div class="d-flex">
+                    <div>
+                      <p class="text-info mb-1"><%= not.title %></p>
+                      <p class="mb-0"><%= not.message %></p>
+                      <small><%= not.createdAt %></small>
+                    </div>
+                  </div>
+                </li>
+              <% }) %>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- content-wrapper ends -->
+  <!-- partial:partials/_footer.html -->
+  <footer class="footer">
+    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+      <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2023.  All rights reserved.</span>
+      <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
+    </div>
+  </footer>
+  <!-- partial -->
+</div>
+<!-- main-panel ends -->
+

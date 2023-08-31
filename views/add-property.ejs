@@ -1,0 +1,25 @@
+
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Add a New Property</h4>
+        <p class="card-description">
+          Add a new property, make sure that the property doesn't exist before.
+        </p>
+        <p style="color: red;"><%= error %></p>
+        <form action="/add-property" method="post" class="forms-sample">
+            <div class="form-group">
+                <label for="name">Name of Property</label>
+                <input type="text" class="form-control" id="exampleInputPassword4" name="name" placeholder="Name" required>
+              </div>
+          <div class="form-group">
+            <label for="cost">Cost</label>
+            <input type="number" class="form-control" id="exampleInputPassword4" name="cost" placeholder="Cost" required>
+          </div>
+          <button type="submit" class="btn btn-primary mr-2">Submit</button>
+          <a class="btn btn-light" href="/">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
