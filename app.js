@@ -60,7 +60,7 @@ app.use(session({
 
 app.use(express.static('public'))
 app.use('', userRouter)
-app.use('', authMiddleware, mainRouter)
+app.use('', mainRouter)
 
 //error handler
 app.use(errorHandlerMiddleware);
