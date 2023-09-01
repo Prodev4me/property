@@ -12,7 +12,7 @@ const {loginPage, generate, postRegister,
 router.get('/login', loginPage)
 router.get('/generate', generate)
 router.post('/register', postRegister)
-router.post('/generateToken',authMiddleware,authAdmin, generateTokenPost)
+router.post('/generateToken', generateTokenPost)
 // router.get('/loginToken',authMiddleware,authAdmin, loginToken)
 router.post('/login',postLogin)
 router.get('/forgotpassword', forgotPasswordPage)
