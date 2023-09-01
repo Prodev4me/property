@@ -10,8 +10,8 @@ const {loginPage, generate, postRegister,
 } = require('../controllers/user')
 
 router.get('/login', loginPage)
-router.get('/generate',authMiddleware, authAdmin, generate)
-router.post('/register',authMiddleware, authAdmin, postRegister)
+router.get('/generate', generate)
+router.post('/register', postRegister)
 router.post('/generateToken',authMiddleware,authAdmin, generateTokenPost)
 // router.get('/loginToken',authMiddleware,authAdmin, loginToken)
 router.post('/login',postLogin)
