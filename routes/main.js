@@ -53,7 +53,7 @@ router.post('/', rentsearch)
 router.get('/delete/:id',authAdmin, deletepage)
 router.get('/lease-agreement-form', leasePage)
 router.get('/download-lease/:id', downloadLease)
-router.get('/upload-lease/:id', leaseUploadPage)
-router.post('/upload-lease/:id', upload.single('file'), leaseUpload)
+router.get('/upload-lease/:id', authAdmin, leaseUploadPage)
+router.post('/upload-lease/:id', authAdmin, upload.single('file'), leaseUpload)
 
 module.exports = router
