@@ -30,7 +30,24 @@ const UserSchema = new Schema({
     admin: {
         type: Boolean,
         default: false
+    },
+    ownedProperty:{
+        type:Number,
+        default: 0
+    },
+    pendingRent:{
+        type:Number,
+        default: 0
+    },
+    dueRent:{
+        type:Number,
+        default: 0
+    },
+    paidRent:{
+        type:Number,
+        default: 0
     }
+
 
 });
 

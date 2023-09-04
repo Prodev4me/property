@@ -1,0 +1,39 @@
+
+<div class="main-panel">
+    <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Upload Lease Agreement Form</h4>
+            <p class="card-description">
+              Upload the lease Agreement form signed by both the Landlord and Tenant (<%= user.username %>)
+            </p>
+            <p style="color: red;"><%= error %></p>
+            <form action="/upload-lease/<%= user._id %>" method="post"  enctype="multipart/form-data" class="forms-sample">
+                <div class="form-group">
+                    <label>PDF Only</label>
+                    <div class="input-group col-xs-12">
+                      <input type="file" id="fileInput" name="file" accept=".pdf" class="form-control file-upload-info" >
+                      <input type="text" disabled placeholder="<%= originalName %>" >
+                      <span class="input-group-append">
+                        <button class="file-upload-browse btn btn-primary" type="submit">Upload</button>
+                        <a class="btn btn-light" href="/">Cancel</a>
+                      </span>
+                    </div>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    
+     const fileName = "Your retrieved file name"; // Replace with your retrieved file name
+     const fileInput = document.getElementById('fileInput');
+     console.log(fileInput.outerHTML)
+   });
+
+  </script>

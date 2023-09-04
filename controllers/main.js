@@ -7,6 +7,13 @@ const Notice = require('../model/notifications')
 const moment = require('moment')
 const Prop = require('../model/Prop') //for all properties
 
+const File = require('../model/File')
+const multer = require('multer');
+const mongoose = require('mongoose');
+const upload = multer({ dest: 'uploads/' });
+const fs = require('fs');
+
+
 const stripeSecretkey = process.env.STRIPE_SECRET_KEY
 const stripePublickey = process.env.STRIPE_PUBLIC_KEY
 
@@ -18,7 +25,7 @@ const allDash = async (req,res) => {
 
     const noticeLast3 = await Notice.find({owner: currentUser.username, read: false}).sort('-createdAt').limit(3)
 
-    return {noticeLast3: noticeLast3}
+    return {noticeLast3: noticeLast3, currentUser: currentUser}
 }
 
 const changeToInt = async (value, req, res) => {
@@ -87,7 +94,32 @@ const dashboard = async (req, res) => {
             }).sort('-createdAt')
         }
 
-        res.render('adminDashboard', {currentUser, stripePublickey: stripePublickey, noticeLast3, properties, notice, noProperties, pendCost, dueCost, paidCost, prop, success, error, error2, success2, search})
+        const users = await User.find({})
+        //ownedProperty, due rent, and pending rents of all users
+        await users.forEach(async user => {
+            
+            //could use aggregation to filter out repeated names
+            //Number of properties owned by the user
+            let rent = []
+            const Properties = await Property.find({owner: user.username}).select('name')
+            await Properties.forEach(async prop => {
+                await rent.push(prop.name)
+            });
+            rent = [...new Set(rent)]
+            const noProperties = rent.length
+
+            const properties__ch2 =await Property.find({owner: user.username, status: "Pending"}).count()
+            const properties__ch3 =await Property.find({owner: user.username, status: "Due"}).count()
+            const properties__ch4 =await Property.find({owner: user.username, status: "Paid"}).count()
+
+            user.ownedProperty = noProperties
+            user.pendingRent = properties__ch2
+            user.dueRent = properties__ch3
+            user.paidRent = properties__ch4
+            await user.save()
+        });        
+
+        res.render('adminDashboard', {currentUser,users, stripePublickey: stripePublickey, noticeLast3, properties, notice, noProperties, pendCost, dueCost, paidCost, prop, success, error, error2, success2, search})
 
     } else {
          //find property relating to the current user
@@ -157,7 +189,7 @@ const rentsearch = async (req, res) => {
 }
 const addRent = async (req, res) => {
     //for all dashboard
-    const {noticeLast3} = await allDash(req,res)
+    const {noticeLast3, currentUser} = await allDash(req,res)
 
     const AlUser = await User.find({})
     const AllProp = await Prop.find({})
@@ -166,7 +198,7 @@ const addRent = async (req, res) => {
     if(req.query.error){
         error = req.query.error
     }
-    res.render('add-rent',{noticeLast3, stripePublickey: stripePublickey, AllProp, AlUser,error})
+    res.render('add-rent',{noticeLast3, currentUser, stripePublickey: stripePublickey, AllProp, AlUser,error})
 }
 
 const postAddRent = async (req, res) => {
@@ -207,7 +239,7 @@ const postAddRent = async (req, res) => {
 
 const editRent = async (req, res) => {
     //for all dashboard
-    const {noticeLast3} = await allDash(req,res)
+    const {noticeLast3, currentUser} = await allDash(req,res)
 
     //find rent with id
     const property = await Property.findById(req.params.id)
@@ -223,7 +255,7 @@ const editRent = async (req, res) => {
         error = req.query.error
     }
 
-   res.render('edit-rent',{noticeLast3, stripePublickey: stripePublickey, AllProp, AlUser, property, error})
+   res.render('edit-rent',{noticeLast3, currentUser, stripePublickey: stripePublickey, AllProp, AlUser, property, error})
 }
 
 const postEditRent = async (req, res) => {
@@ -281,12 +313,12 @@ const deleteRent = async (req, res) => {
 
 const addProp = async (req, res) => {
     //for all dashboard
-    const {noticeLast3} = await allDash(req,res)
+    const {noticeLast3, currentUser} = await allDash(req,res)
     let error =""
     if(req.query.error){
         error = req.query.error
     }
-    res.render('add-property',{noticeLast3, stripePublickey: stripePublickey, error})
+    res.render('add-property',{noticeLast3, currentUser, stripePublickey: stripePublickey, error})
 }
 
 const postAddProp = async (req, res) => {
@@ -304,7 +336,7 @@ const postAddProp = async (req, res) => {
 }
 const editProp = async (req, res) => {
     //for all dashboard
-    const {noticeLast3} = await allDash(req,res)
+    const {noticeLast3, currentUser} = await allDash(req,res)
 
     //find property by ID
     const prop = await Prop.findById(req.params.id)
@@ -317,7 +349,7 @@ const editProp = async (req, res) => {
         error = req.query.error
     }
 
-    res.render('edit-property',{noticeLast3, stripePublickey: stripePublickey, prop,error})
+    res.render('edit-property',{noticeLast3, currentUser, stripePublickey: stripePublickey, prop,error})
 }   
 const postEditProp = async (req, res) => {
 
@@ -407,7 +439,7 @@ const purchase = async (req,res) => {
 
         //create notification that payment has been made
         const text = `You have just paid ${total} for ${property.name} Rent`
-        const title = `Pyment for ${property.name} Rent`
+        const title = `Payment for ${property.name} Rent`
         const notice = await Notice.create({owner: property.owner, message: text, title: title})
 
 
@@ -418,6 +450,129 @@ const purchase = async (req,res) => {
     res.status(200).json({message: "Done"})//DONT CHANGE WHILE CHANGING OTHER ERROR RESPONSE
     
             
+}
+
+
+const deletepage = async (req, res) => {
+
+    //for all dashboard
+    const {noticeLast3, currentUser} = await allDash(req,res)
+
+    const property = await Property.findById(req.params.id)
+    const pro = await Prop.findById(req.params.id)
+    const user = await User.findById(req.params.id)
+    if(!property && !pro && !user) {
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `Can not find any with the id ${req.params.id}`})
+    }
+
+    res.render('deletePage', {noticeLast3, currentUser, stripePublickey: stripePublickey, property, pro, user})
+}
+
+const leasePage = async (req, res) => {
+    //for all dashboard
+    const {noticeLast3, currentUser} = await allDash(req,res)
+
+    const file = await File.findOne({renter: currentUser.username}) 
+
+    res.render('lease', {noticeLast3, currentUser, stripePublickey: stripePublickey, file, currentUser})
+}
+
+const downloadLease = async (req, res) => {
+
+    const user = await User.findById(req.params.id)
+    if(!user){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No user with the id ${req.params.id}`})
+    }
+    const file = await File.findOne({renter: user.username}) 
+
+    if (!file) {
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `File Not Found`})
+    }
+    if(!file.path){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `File Not Found}`})
+    }
+    res.download(file.path); // Serve the document as a downloadable file
+
+}
+
+const leaseUploadPage = async(req, res)=>{
+    //for all dashboard
+    const {noticeLast3, currentUser} = await allDash(req,res)
+
+    //find property by ID
+    const user = await User.findById(req.params.id)
+    if(!user){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No user with the id ${req.params.id}`})
+    }
+    const file_ = await File.findOne({renter: user.username})
+    let originalName = ""
+    if (file_){
+        originalName = file_.originalname
+    }
+    let error =""
+    if(req.query.error){
+        error = req.query.error
+    }
+
+    res.render('leaseUpload', {noticeLast3, currentUser, stripePublickey: stripePublickey, error, user, originalName})
+}
+const deleteFile = async (filename) => {
+
+    //delete uploaded file
+    const filePath = `uploads/${filename}`; // Replace with your file path
+
+    // Use the fs.unlink method to delete the file
+    fs.unlink(filePath, (err) => {
+        if (err) {
+        console.error(err);
+        console.log('Error deleting the file')
+        }
+    })
+}
+
+const leaseUpload = async (req, res)=> {
+
+    try{
+        const user = await User.findById(req.params.id)
+        if(!user){
+            return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No user with the id ${req.params.id}`})
+        }
+
+        if(!req.file){
+            return res.redirect(`/upload-lease/${req.params.id}?error=No file found`)
+        }
+
+        if(req.file.mimetype !== 'application/pdf'){
+            await deleteFile(req.file.filename)
+            return res.redirect(`/upload-lease/${req.params.id}?error=Make sure file is a PDF`)
+        }
+        if(req.file.size > 5 * 1024 * 1024){
+            await deleteFile(req.file.filename)
+            return res.redirect(`/upload-lease/${req.params.id}?error=Make sure file is no more than 5MB`)
+        }
+
+        // Access the uploaded file details
+        const { originalname, filename, path } = req.file;
+
+        // Save the file details to the database
+        const file_ = await File.findOne({renter: user.username})
+        if(file_){
+            const filename_ = file_.filename
+            await deleteFile(filename_)
+            const newFile_ = await File.findOneAndUpdate({renter: user.username}, {renter: user.username, originalname, filename, path },{new: true, runValidators:true} )
+        } else {
+            const file = new File({ renter: user.username, originalname, filename, path });
+            await file.save();
+        }
+        
+        res.redirect('/')
+    } catch(error) {
+        if(req.file.filename){
+            await deleteFile(req.file.filename)
+        }
+        return res.redirect(`/upload-lease/${req.params.id}?error=An error was found`)
+    }
+    
 }
 
 module.exports = {
@@ -435,4 +590,10 @@ module.exports = {
     postEditProp,
     deleteProp,
     rentsearch,
+    deletepage,
+    allDash,
+    leasePage,
+    leaseUploadPage,
+    leaseUpload,
+    downloadLease
 }

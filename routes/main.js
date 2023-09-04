@@ -1,12 +1,34 @@
 const express = require('express')
 const router = express.Router()
+const multer = require('multer');
+const mongoose = require('mongoose');
+const File = require('../model/File')
+const User = require('../model/User')
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: async function (req, file, cb) {      
+      cb(null, 'uploads/'); // Destination folder for uploaded files
+    },
+    filename: async function (req, file, cb) {
+      const user = await User.findById(req.params.id)
+      cb(null,  user.username+  Date.now()  + '-' + file.originalname); // File naming convention
+    },
+  });
+  
+const upload = multer({ 
+    storage: storage
+});
+
+
+// const upload = multer({ dest: 'uploads/' });
 
 const {dashboard, purchase, changeNotice, addRent, postAddRent, addProp, postAddProp, editRent,
     postEditRent,
     deleteRent,
     editProp,
-    postEditProp,
-    deleteProp, rentsearch} = require('../controllers/main')
+    postEditProp,leaseUpload,downloadLease,
+    deleteProp, rentsearch, deletepage, leasePage,leaseUploadPage} = require('../controllers/main')
 
 const {authAdmin} = require('../middleware/authentication')
 
@@ -28,6 +50,10 @@ router.patch('/edit-property/:id',authAdmin,  postEditProp)
 router.delete('/delete-property/:id',authAdmin,  deleteProp)
 
 router.post('/', rentsearch)
-
+router.get('/delete/:id',authAdmin, deletepage)
+router.get('/lease-agreement-form', leasePage)
+router.get('/download-lease/:id', downloadLease)
+router.get('/upload-lease/:id', leaseUploadPage)
+router.post('/upload-lease/:id', upload.single('file'), leaseUpload)
 
 module.exports = router

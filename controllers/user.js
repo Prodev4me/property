@@ -15,6 +15,9 @@ const mongoose = require('mongoose')
 const generateToken = require('../middleware/token')
 
 const {authMiddleware} = require('../middleware/authentication.js')
+const {allDash} = require('./main')
+const Property = require('../model/Property')
+const stripePublickey = process.env.STRIPE_PUBLIC_KEY
 
 
 //generate Page
@@ -26,6 +29,11 @@ const generate = async (req, res) => {
 
 const loginPage = async (req, res) => {
 
+    const token = req.cookies.token;
+    if (token) {
+        return res.redirect('/')
+    }
+    
     let error = ""
     if(req.query.error){
         error = req.query.error
@@ -166,7 +174,12 @@ const forgotPasswordPage = async (req, res) => {
     if (req.query.error){
         error = req.query.error
     }
-    res.render('admin/forgot_password', {layout: noLayout, success, error})
+
+    let email = ""
+    if (req.query.email){
+        email = req.query.email
+    }
+    res.render('admin/forgot_password', {layout: noLayout, success, error, email})
 }
 
 // post 
@@ -230,8 +243,75 @@ const resetPassword = async (req, res) => {
 
 }
 
+const userPage = async (req, res) => {
+    
+    //for all dashboard
+    const {noticeLast3, currentUser} = await allDash(req,res)
+    const user = await User.findById(req.params.id)
 
+    if(!user) {
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `Can not find any user with the id ${req.params.id}`})
+    }
 
+    //check if is the owner of userpGE
+    if(currentUser.username != user.username) {
+        return res.render("error", {layout: noLayout, name: "Unauthorized",statusCode: 401, message: `You are not allowed to view this page`})
+    }
+    res.render('userPage', {stripePublickey: stripePublickey, noticeLast3, user, currentUser})
+}
+const editUserPage = async (req, res) => {
+    //for all dashboard
+    const {noticeLast3, currentUser} = await allDash(req,res)
+    const user = await User.findById(req.params.id)
+
+    if(!user) {
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `Can not find any user with the id ${req.params.id}`})
+    }
+
+    //check if is the owner of userpGE
+    if(currentUser.username != user.username) {
+        return res.render("error", {layout: noLayout, name: "Unauthorized",statusCode: 401, message: `You are not allowed to view this page`})
+    }
+    let error = ""
+    if(req.query.error) {
+        error = req.query.error
+    }
+    res.render('editUserPage', {stripePublickey: stripePublickey, noticeLast3, error, user, currentUser})
+}
+
+const postEditUserPage= async (req,res)=>{
+    try{
+
+        //for all dashboard
+        const {noticeLast3, currentUser} = await allDash(req,res)
+        const user_ = await User.findById(req.params.id)
+
+        //check if is the owner of userpGE
+        if(currentUser.username != user_.username) {
+            return res.render("error", {layout: noLayout, name: "Unauthorized",statusCode: 401, message: `You are not allowed to view this page`})
+        }
+
+        const user = await User.findOneAndUpdate({_id: req.params.id}, {...req.body},{new: true, runValidators:true})
+        res.redirect(`/user-page/${req.params.id}`)
+    } catch {
+        return res.redirect(`/edit-userpage/${req.params.id}?error=Make sure all fields are field in correctly and are unique`)
+    }
+}
+
+const deleteUser = async (req, res) => {
+
+    const user = await User.findById(req.params.id)
+    if(!user) {
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No User with the id ${req.params.id}`})
+    }
+    await User.deleteOne({_id: req.params.id})
+
+    // delete all rents the user has
+    const rent = await Property.deleteMany({owner: user.username})
+
+    res.redirect('/')
+
+}
 module.exports = {
     loginPage,
     generate,
@@ -244,4 +324,8 @@ module.exports = {
     forgotPassword,
     resetPassword,
     logout,
+    userPage,
+    editUserPage,
+    postEditUserPage,
+    deleteUser
 }

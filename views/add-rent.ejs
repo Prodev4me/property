@@ -1,37 +1,40 @@
 
-
-<div class="col-12 grid-margin stretch-card">
-    <div class="card">
-      <div class="card-body">
-        <h4 class="card-title">Add New Renter</h4>
-        <p class="card-description">
-          Add a new renter with the property he / she is renting. Make sure to have registered the renter to attach a property to his / her name
-        </p>
-        <p style="color: red;"><%= error %></p>
-        <form action="/add-rent" method="post" class="forms-sample">
-            <div class="form-group">
-                <label for="owner">Renter</label>
-                <select class="form-control" name="owner" id="exampleSelectGender">
-                    <% AlUser.forEach(user => { %>
-                    <option><%= user.username %></option>
-                    <% }) %>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="name">Name of the Property</label>
-                <select class="form-control" name="name" id="exampleSelectGender">
-                    <% AllProp.forEach(prop => { %>
-                    <option><%= prop.name %></option>
-                    <% }) %>
-                </select>
-            </div>
-          <div class="form-group">
-            <label for="deadline">Deadline for Payment</label>
-            <input type="date" class="form-control" id="exampleInputPassword4" name="deadline" placeholder="Deadline Date" required>
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Add New Renter</h4>
+            <p class="card-description">
+              Add a new renter with the property he / she is renting. Make sure to have registered the renter to attach a property to his / her name
+            </p>
+            <p style="color: red;"><%= error %></p>
+            <form action="/add-rent" method="post" class="forms-sample">
+                <div class="form-group">
+                    <label for="owner">Renter</label>
+                    <select class="form-control" name="owner" id="exampleSelectGender">
+                        <% AlUser.forEach(user => { %>
+                        <option><%= user.username %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name of the Property</label>
+                    <select class="form-control" name="name" id="exampleSelectGender">
+                        <% AllProp.forEach(prop => { %>
+                        <option><%= prop.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+              <div class="form-group">
+                <label for="deadline">Deadline for Payment</label>
+                <input type="date" class="form-control" id="exampleInputPassword4" name="deadline" placeholder="Deadline Date" required>
+              </div>
+              <button type="submit" class="btn btn-primary mr-2">Submit</button>
+              <a class="btn btn-light" href="/">Cancel</a>
+            </form>
           </div>
-          <button type="submit" class="btn btn-primary mr-2">Submit</button>
-          <a class="btn btn-light" href="/">Cancel</a>
-        </form>
+        </div>
       </div>
-    </div>
-  </div>
+</div>
+</div>

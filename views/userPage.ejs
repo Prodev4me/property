@@ -1,0 +1,41 @@
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title"><%= user.username %></h4>
+        <p class="card-description">
+          You can Edit your info
+        </p>
+        <div class="row">
+          <div class="col-md-6">
+            <address>
+              <p class="font-weight-bold">Username</p><br>
+              <p>
+                Email
+              </p><br>
+              <p>
+                Password
+              </p><br>
+            </address>
+          </div>
+          <div class="col-md-6">
+            <address class="text-primary">
+              <p style="color: blue;" class="font-weight-bold">
+               <%= user.username %>
+              </p><br>
+              <p style="color: blue;" class="mb-2">
+                <%= user.email %>
+              </p><br>
+              <p style="color: blue;" class="font-weight-bold">
+                <a href="/forgotpassword?email=<%= user.email %>">Rest Your Password</a>
+              </p><br>
+            </address>
+          </div>
+
+          <form action="/edit-userpage/<%= user._id %>?_method=GET" method="POST">
+            <button type="submit" class="btn btn-primary mr-2">EDIT</button>   
+            <a class="btn btn-light" href="/">Go Back</a>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>

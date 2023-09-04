@@ -156,11 +156,7 @@
                       <% } %>
                       </td>
                       <td class="font-weight-medium"><a href="/edit-rent/<%= property._id %>">Edit</a></td>
-                      <td> 
-                        <form action="/delete-rent/<%= property._id %>?_method=DELETE" method="POST">
-                          <input style="color: red;" type="submit" value="Delete" class="btn-delete btn">
-                        </form>
-                      </td>
+                      <td class="font-weight-medium"><a style="color: red;" href="/delete/<%= property._id %>">Delete</a></td>
                     </tr>
                     <% }) %>
                     
@@ -200,11 +196,7 @@
                       <td><%= pro.name %></td>
                       <td><%= pro.cost %></td>
                       <td class="font-weight-medium"><a href="/edit-property/<%= pro._id %>">Edit</a></td>
-                      <td> 
-                        <form action="/delete-property/<%= pro._id %>?_method=DELETE" method="POST">
-                          <input style="color: red;" type="submit" value="Delete" class="btn-delete btn">
-                        </form>
-                      </td>
+                      <td class="font-weight-medium"><a style="color: red;" href="/delete/<%= pro._id %>">Delete</a></td>
                     </tr>
                     <% }) %>
                     
@@ -246,6 +238,50 @@
           </div>
       </div>
       <!-- end -->
+
+      <!-- users -->
+      <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-title mb-0"> All Renters</p>
+              <p id="error_message" style="color: red"></p>
+              <div class="table-responsive">
+                <table class="table table-striped table-borderless">
+                  <thead>
+                    <tr>
+                      <th>Username</th>
+                      <th>Email</th>
+                      <th>Property</th>
+                      <th>Pending</th>
+                      <th>Due</th>
+                      <th>Paid Rents</th>
+                    </tr>  
+                  </thead>
+                  <tbody>
+                    <% users.forEach(user => { %>
+                    <tr>
+                      <td><%= user.username %></td>
+                      <td><%= user.email %></td>
+                      <td><%= user.ownedProperty %></td>
+                      <td><%= user.pendingRent %></td>
+                      <td><%= user.dueRent %></td>
+                      <td><%= user.paidRent %></td>
+                      <td class="font-weight-medium"><a style="color: blue;" href="/upload-lease/<%= user._id %>">Upload</a></td>
+                      <td class="font-weight-medium"><a style="color: red;" href="/delete/<%= user._id %>">Delete</a></td>
+                    </tr>
+                    <% }) %>
+                    
+                  </tbody>
+                </table>
+                
+              </div>
+
+            </div>
+            
+          </div>
+        </div>
+      </div>
       
       
       
@@ -255,7 +291,7 @@
     <footer class="footer">
       <div class="d-sm-flex justify-content-center justify-content-sm-between">
         <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2023.  All rights reserved.</span>
-        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
+        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Developed By VisualGreatness</span>
       </div>
     </footer>
     <!-- partial -->

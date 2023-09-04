@@ -1,0 +1,58 @@
+<div class="main-panel">
+  <div class="content-wrapper">
+    <% if (property) { %>
+        
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Delete <%= property.name %> Rent</h4>
+            <p class="card-description">
+              Are you sure you want to delete <%= property.name %> Rent set for <%= property.deadline %> deadline
+            </p>
+            <form action="/delete-rent/<%= property._id %>?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-primary mr-2">Yes</button>   
+                <a class="btn btn-light" href="/">No</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (pro) { %>
+        
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Delete <%= pro.name %> Property</h4>
+                <p class="card-description">
+                  Are you sure you want to delete <%= pro.name %> Property
+                </p>
+                <form action="/delete-property/<%= pro._id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-primary mr-2">Yes</button>   
+                    <a class="btn btn-light" href="/">No</a>
+                </form>
+              </div>
+            </div>
+          </div>
+    <% } %>
+
+    
+    <% if (user) { %>
+        
+      <div class="col-md-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Delete <%= user.username %> Account and All related Rents</h4>
+              <p class="card-description">
+                Are you sure you want to delete this user:  <%= user.username %>
+              </p>
+              <form action="/deleteUser/<%= user._id %>?_method=DELETE" method="POST">
+                  <button type="submit" class="btn btn-primary mr-2">Yes</button>   
+                  <a class="btn btn-light" href="/">No</a>
+              </form>
+            </div>
+          </div>
+        </div>
+    <% } %>
+  </div>
+</div>

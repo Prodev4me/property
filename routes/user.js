@@ -6,7 +6,7 @@ const {authMiddleware, authAdmin} = require('../middleware/authentication.js')
 const {loginPage, generate, postRegister,
     generateTokenPost, postLogin,
     loginToken, resetPasswordPage,forgotPasswordPage,
-    forgotPassword, resetPassword, logout
+    forgotPassword, resetPassword, logout, userPage, editUserPage,postEditUserPage, deleteUser
 } = require('../controllers/user')
 
 router.get('/login', loginPage)
@@ -21,4 +21,11 @@ router.get('/resetpassword', resetPasswordPage)
 router.post('/resetpassword', resetPassword)
 router.get('/logout', authMiddleware, logout)
 
+//user page
+router.get('/user-page/:id',authMiddleware, userPage)
+router.get('/edit-userpage/:id',authMiddleware, editUserPage)
+router.patch('/edit-userpage/:id',authMiddleware, postEditUserPage)
+
+
+router.delete('/deleteUser/:id',authMiddleware, authAdmin, deleteUser)
 module.exports = router

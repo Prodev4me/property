@@ -1,0 +1,25 @@
+
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Edit User Info</h4>
+        <p class="card-description">
+            Edit User Info
+        </p>
+        <p style="color: red;"><%= error %></p>
+        <form action="/edit-userpage/<%= user._id %>?_method=PATCH" method="post" class="forms-sample">
+            <div class="form-group">
+                <label for="name">Username</label>
+                <input type="text" class="form-control" id="exampleInputPassword4" name="username" placeholder="Username" value="<%= user.username %>" required>
+              </div>
+          <div class="form-group">
+            <label for="cost">Email</label>
+            <input type="text" class="form-control" id="exampleInputPassword4" name="email" placeholder="Email" value="<%= user.email %>" required>
+          </div>
+          <button type="submit" class="btn btn-primary mr-2">Submit</button>
+          <a class="btn btn-light" href="/user-page/<%= user._id %>">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
