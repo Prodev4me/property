@@ -505,7 +505,7 @@ const leaseUploadPage = async(req, res)=>{
         return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No user with the id ${req.params.id}`})
     }
     const file_ = await File.findOne({renter: user.username})
-    let originalName = ""
+    let originalName = "No File Uploaded"
     if (file_){
         originalName = file_.originalname
     }

@@ -17220,7 +17220,7 @@ button.bg-dark:focus,
 
 .pt-5,
 .py-5 {
-  padding-top: 3rem !important;
+  padding-top: 0.1rem !important;
 }
 
 .pr-5,
@@ -28379,11 +28379,11 @@ div.tagsinput span.tag a {
 }
 
 .auth .brand-logo {
-  margin-bottom: 2rem;
+  margin-bottom: 0.1rem;
 }
 
 .auth .brand-logo img {
-  width: 150px;
+  width: 300px;
 }
 
 .auth form .form-group {
