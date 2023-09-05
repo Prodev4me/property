@@ -226,7 +226,7 @@ const postAddRent = async (req, res) => {
 
         //send notifications
         const user = await User.findOne({username: property.owner})
-        const text = `Hello ${property.owner}, a new rent, ${property.name} which cost $${property.cost} has just been added, the deadline for payment is ${property.deadline} `
+        const text = `A new rent- ${property.name} Rent, which cost $${property.cost} has just been added, the deadline for payment is ${property.deadline} `
         const title = 'New Rent Added'
         await sendNotification(user.email, property.owner, text, title)
         res.redirect('/')
@@ -279,13 +279,26 @@ const postEditRent = async (req, res) => {
             return res.redirect(`/edit-rent/${req.params.id}?error=Error, check deadline date input`)
         }
     
+        const oldProperty = await Property.findById(req.params.id)
         const property = await Property.findOneAndUpdate({_id: req.params.id}, {name, owner, deadline, cost: cost, status: status}, {new: true, runValidators:true})
     
         //send notifications
         const user = await User.findOne({username: property.owner})
-        const text = `Hello ${property.owner},the rent, ${property.name} was editted, login to your account to check for any changes: ${url}/`
+        const text = `The rent- ${oldProperty.name} Rent was editted, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
         const title = 'Changes in Rent details'
-        await sendNotification(user.email, property.owner, text, title)
+
+        //if a owner changed
+        if(oldProperty.owner != property.owner){
+            //send to previous owner that it has been removed
+            const user_ = await User.findOne({username: oldProperty.owner})
+            const text_ = `The rent- ${oldProperty.name} Rent has been removed, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
+            await sendNotification(user_.email, oldProperty.owner, text_, title)
+            //send to new owner that rent has been added
+            const text = `The rent- ${property.name} Rent has been added, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
+            await sendNotification(user.email, property.owner, text, title)
+        } else {        
+            await sendNotification(user.email, property.owner, text, title)
+        }
     
         res.redirect('/')
     } catch (error) {
@@ -303,7 +316,7 @@ const deleteRent = async (req, res) => {
 
     //send notifications
     const user = await User.findOne({username: property.owner})
-    const text = `Hello ${property.owner},the rent, ${property.name} has been removed, login to your account to check for any changes:${url}/`
+    const text = `The rent- ${property.name} Rent has been removed, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
     const title = `${property.name} rent Has been Removed`
     await sendNotification(user.email, property.owner, text, title)
 
@@ -368,7 +381,7 @@ const postEditProp = async (req, res) => {
                 
                 //send notifications: Alert all owners of the property of the change /only for pending and due
                 const user = await User.findOne({username: proper.owner})
-                const text = `Hello ${proper.owner},the rent, ${propOld.name} was editted, login to your account to check for any changes: ${url}/`
+                const text = `The rent- ${propOld.name} Rent was editted, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
                 const title = 'Changes in Property details'
                 await sendNotification(user.email, proper.owner, text, title)
             });
@@ -392,7 +405,7 @@ const deleteProp = async (req, res) => {
     await property_.forEach(async proper => {
         //send notifications: Alert all owners of the property of the change
         const user = await User.findOne({username: proper.owner})
-        const text = `Hello ${proper.owner},the rent, ${proper.name} has been removed, login to your account to check for any changes: ${url}/`
+        const text = `The rent- ${proper.name} Rent has been removed, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
         const title = `${proper.name} rent Has been Removed`
         await sendNotification(user.email, proper.owner, text, title)
     });

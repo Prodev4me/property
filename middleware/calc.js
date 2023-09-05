@@ -63,6 +63,19 @@ async function sendNotification(email, owner, text, title) {
         const notice = await Notice.create({owner: owner, message: text, title: title})
     }
 
+    // Set up email content
+    const htmlContent = `
+
+        <h3>Hello ${owner}, </h3> <br>
+
+        <p>${text}</p><br><br>
+
+        <p>Sincerely,</p>
+        <p>From VisualGreatness.</p>
+        <a class="navbar-brand brand-logo-mini" style="size: 40px;" href="https://property-site.up.railway.app"><img src="https://i.ibb.co/6BH7h6Q/20230904-062051-0000-removebg-preview.png" alt="logo"/></a>
+        
+    `;
+
     // send the reset email
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -76,7 +89,7 @@ async function sendNotification(email, owner, text, title) {
         from: 'info.tekcify@gmail.com',
         to: email,
         subject: title,
-        text: text
+        html: htmlContent,
     };
 
     const transport = await transporter.sendMail(mailOptions, (error) => {
@@ -113,7 +126,7 @@ const fivedaysSchedule = async () => {
           const deadline = property.deadline
           const user = await User.findOne({username:property.owner})
           const email = user.email
-          const text = `${email}: Hello ${owner}, The payment of ${name} will soon be due, we are kindly reaching out to you that you pay up before the deadline: ${deadline}`
+          const text = `The payment of ${name} will soon be due, we are kindly reaching out to you that you pay up before the deadline: ${deadline}`
           const title = `${name} Rent Due in less than 5 days`
           await sendNotification(email, owner,text, title);
       }
@@ -146,7 +159,7 @@ const deadlineDay = async () => {
           const deadline = property.deadline
           const user = await User.findOne({username:property.owner})
           const email = user.email
-          const text = `${email}: Hello ${owner}, The payment of ${name} is due today: ${deadline}. We are kindly reaching out to you that you pay up to avoid increase in the cost as an increase of 0.5% of the cost will be added after every 4days`
+          const text = `The payment of ${name} is due today: ${deadline}. We are kindly reaching out to you that you pay up to avoid increase in the cost, as an increase of 0.5% of the cost will be added after every 4 days.`
           const title = `${name} Rent Due Today`
           await sendNotification(email,owner, text, title);
       }
@@ -186,7 +199,7 @@ const deadlineDayNew = async () => {
           const cost = rent.cost
           const user = await User.findOne({username:rent.owner})
           const email = user.email
-          const text = `Hello ${owner}, a new rent, ${name} which cost $${cost} has just been added, the deadline for payment is ${deadline} `
+          const text = `A new rent- ${name} Rent which cost $${cost} has just been added, the deadline for payment is ${deadline} `
           const title = 'New Rent Added'
           await sendNotification(email, owner, text, title);
       }
@@ -234,7 +247,7 @@ const EfourdaysSchedule = async () => {
           const user = await User.findOne({username:property.owner})
           const email = user.email
           const addToFour = property.addToFour
-          const text = `${email}: Hello ${owner}, The payment of ${name} has been due for ${addToFour} days, we are kindly reaching out to you that you pay up to avoid increase in the cost. Presently, the cost is now at $${cost} as a result of 0.5% increase after every 4days`
+          const text = `The payment of ${name} Rent has been due for ${addToFour} days, we are kindly reaching out to you that you pay up to avoid increase in the cost. Presently, the cost is now at $${cost} as a result of 0.5% increase after every 4days`
           const title = `${name} Rent Due for ${addToFour} days`
           await sendNotification(email, owner, text, title);
       }

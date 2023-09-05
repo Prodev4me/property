@@ -93,7 +93,7 @@ const generateTokenPost = async (req, res) => {
     const email = user.email
 
     //send tokenUrl to user email
-    const text= `Hello ${user.username}, Here's a link to reset your password- ${tokenUrl}`
+    const text= `Here's a link to reset your password- <a href="${tokenUrl}"> ${tokenUrl} </a>`
     const title = `Reset Password`
     await sendNotification(email, user.username, text, title)
     //end 
@@ -202,7 +202,7 @@ const forgotPassword = async (req, res) => {
     try{
         //send the reset email
         const resetUrl =`${url}/resetpassword?token=${resetToken}`
-        const text= `Hello ${user.username}, Here's a link to reset your password- ${resetUrl}`
+        const text= `Here's a link to reset your password- <a href="${resetUrl}"> ${resetUrl} </a>`
         const title = `Reset Password`
         const {transport} = await sendNotification(email, user.username, text, title)
 
