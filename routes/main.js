@@ -3,19 +3,19 @@ const router = express.Router()
 const multer = require('multer');
 const mongoose = require('mongoose');
 const File = require('../model/File')
-const User = require('../model/User')
+const User = require('../model/User');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: async function (req, file, cb) {      
       cb(null, './uploads/'); // Destination folder for uploaded files
     },
-    filename: async function (req, file, cb) {
+    filename: async function (req, file, cb) { 
       const user = await User.findById(req.params.id)
       cb(null,  user.username+  Date.now()  + '-' + file.originalname); // File naming convention
     },
   });
-  
+   
 const upload = multer({ 
     storage: storage
 });
