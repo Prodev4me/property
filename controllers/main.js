@@ -98,6 +98,14 @@ const dashboard = async (req, res) => {
         //ownedProperty, due rent, and pending rents of all users
         await users.forEach(async user => {
             
+            //check for file
+            // const file = await File.findOne({renter: user.username})
+            // console.log(file)
+            // let check= false
+            // if(file){
+            //     if(file.originalname_Renter) {check = true}
+            // }
+
             //could use aggregation to filter out repeated names
             //Number of properties owned by the user
             let rent = []
@@ -111,7 +119,8 @@ const dashboard = async (req, res) => {
             const properties__ch2 =await Property.find({owner: user.username, status: "Pending"}).count()
             const properties__ch3 =await Property.find({owner: user.username, status: "Due"}).count()
             const properties__ch4 =await Property.find({owner: user.username, status: "Paid"}).count()
-
+            
+            // user.check_file = check
             user.ownedProperty = noProperties
             user.pendingRent = properties__ch2
             user.dueRent = properties__ch3
@@ -119,7 +128,9 @@ const dashboard = async (req, res) => {
             await user.save()
         });        
 
-        res.render('adminDashboard', {currentUser,users, stripePublickey: stripePublickey, noticeLast3, properties, notice, noProperties, pendCost, dueCost, paidCost, prop, success, error, error2, success2, search})
+
+        
+        res.render('adminDashboard', { currentUser,users, stripePublickey: stripePublickey, noticeLast3, properties, notice, noProperties, pendCost, dueCost, paidCost, prop, success, error, error2, success2, search})
 
     } else {
          //find property relating to the current user
@@ -284,17 +295,17 @@ const postEditRent = async (req, res) => {
     
         //send notifications
         const user = await User.findOne({username: property.owner})
-        const text = `The rent- ${oldProperty.name} Rent was editted, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
+        const text = `The rent- ${oldProperty.name} Rent was editted, login to your account to check for any changes`
         const title = 'Changes in Rent details'
 
         //if a owner changed
         if(oldProperty.owner != property.owner){
             //send to previous owner that it has been removed
             const user_ = await User.findOne({username: oldProperty.owner})
-            const text_ = `The rent- ${oldProperty.name} Rent has been removed, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
+            const text_ = `The rent- ${oldProperty.name} Rent has been removed, login to your account to check for any changes`
             await sendNotification(user_.email, oldProperty.owner, text_, title)
             //send to new owner that rent has been added
-            const text = `The rent- ${property.name} Rent has been added, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
+            const text = `The rent- ${property.name} Rent has been added, login to your account to check for any changes`
             await sendNotification(user.email, property.owner, text, title)
         } else {        
             await sendNotification(user.email, property.owner, text, title)
@@ -316,7 +327,7 @@ const deleteRent = async (req, res) => {
 
     //send notifications
     const user = await User.findOne({username: property.owner})
-    const text = `The rent- ${property.name} Rent has been removed, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
+    const text = `The rent- ${property.name} Rent has been removed, login to your account to check for any changes`
     const title = `${property.name} rent Has been Removed`
     await sendNotification(user.email, property.owner, text, title)
 
@@ -381,7 +392,7 @@ const postEditProp = async (req, res) => {
                 
                 //send notifications: Alert all owners of the property of the change /only for pending and due
                 const user = await User.findOne({username: proper.owner})
-                const text = `The rent- ${propOld.name} Rent was editted, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
+                const text = `The rent- ${propOld.name} Rent was editted, login to your account to check for any changes`
                 const title = 'Changes in Property details'
                 await sendNotification(user.email, proper.owner, text, title)
             });
@@ -405,7 +416,7 @@ const deleteProp = async (req, res) => {
     await property_.forEach(async proper => {
         //send notifications: Alert all owners of the property of the change
         const user = await User.findOne({username: proper.owner})
-        const text = `The rent- ${proper.name} Rent has been removed, login to your account to check for any changes: <a href="${url}"> ${url}/</a>`
+        const text = `The rent- ${proper.name} Rent has been removed, login to your account to check for any changes</a>`
         const title = `${proper.name} rent Has been Removed`
         await sendNotification(user.email, proper.owner, text, title)
     });
@@ -517,17 +528,28 @@ const leaseUploadPage = async(req, res)=>{
     if(!user){
         return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No user with the id ${req.params.id}`})
     }
+
+    //check for file exist
     const file_ = await File.findOne({renter: user.username})
     let originalName = "No File Uploaded"
     if (file_){
         originalName = file_.originalname
     }
+    let originalname_Renter = "No File Uploaded"
+    if (file_){
+        if (file_.originalname_Renter){
+            originalname_Renter = file_.originalname_Renter
+        }
+    }
+        
+
+    //check for error
     let error =""
     if(req.query.error){
         error = req.query.error
     }
 
-    res.render('leaseUpload', {noticeLast3, currentUser, stripePublickey: stripePublickey, error, user, originalName})
+    res.render('leaseUpload', {noticeLast3, currentUser, stripePublickey: stripePublickey, error, user, originalName, originalname_Renter, file_})
 }
 const deleteFile = async (filename) => {
 
@@ -588,6 +610,185 @@ const leaseUpload = async (req, res)=> {
     
 }
 
+const leaseUpload_Renter = async (req, res) => {
+    try{
+        const user = await User.findById(req.params.id)
+        if(!user){
+            return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No user with the id ${req.params.id}`})
+        }
+        if(!req.file){
+            return res.redirect(`/upload-lease/${req.params.id}?error=No file found`)
+        }
+
+        //check if its the owner that uploading
+        //for all dashboard
+        const {currentUser} = await allDash(req,res)
+        if(currentUser.username != user.username){
+            await deleteFile(req.file.filename)
+            return res.render("error", {layout: noLayout, name: "Unauthorized",statusCode: 401, message: `You are not allowed to perform this action`})
+        }
+
+        //check if approved
+        const file_ = await File.findOne({renter: user.username})
+        if(file_){
+            if(file_.approved === true){
+                await deleteFile(req.file.filename)
+                return res.render("error", {layout: noLayout, name: "Unauthorized",statusCode: 401, message: `You are not allowed to perform this action`})
+            }
+        }
+       
+
+        if(req.file.mimetype !== 'application/pdf'){
+            await deleteFile(req.file.filename)
+            return res.redirect(`/upload-lease/${req.params.id}?error=Make sure file is a PDF`)
+        }
+        if(req.file.size > 5 * 1024 * 1024){
+            await deleteFile(req.file.filename)
+            return res.redirect(`/upload-lease/${req.params.id}?error=Make sure file is no more than 5MB`)
+        }
+
+        // Access the uploaded file details
+        const { originalname, filename, path } = req.file;
+
+        // Save the file details to the database
+
+        //if the user doesnt have the landloard signed yet, meaing no file uploaded
+        if(!file_){
+            await deleteFile(req.file.filename)
+            return res.redirect(`/upload-lease/${req.params.id}?error=Landlord has not yet uploaded the signed document.`)
+        }
+        //if the user has already uploaded before- delete previous file 
+        if(file_.originalname_Renter){
+            const filename_ = file_.filename_Renter
+            await deleteFile(filename_)
+            const newFile_ = await File.findOneAndUpdate({renter: user.username}, {renter: user.username, originalname_Renter: originalname, filename_Renter: filename, path_Renter: path },{new: true, runValidators:true} )
+        } else {
+            const newFile_ = await File.findOneAndUpdate({renter: user.username}, {renter: user.username, originalname_Renter: originalname, filename_Renter: filename, path_Renter: path },{new: true, runValidators:true} )
+        }
+        
+        user.check_file = true
+        await user.save()
+
+        //send notifcations TO RENTER THAT DOCUMENT UPLOADED was successful 
+        const email = user.email
+        const owner = user.username
+        const text = `The Lease Agreement Document has been uploaded, wait for admin to approve it. You will receive a notifcation when the admin approves the document.`
+        const title =  'Lease Agreement Document Uploaded'
+        await sendNotification(email, owner, text, title) 
+
+        //send notifcations TO Admin THAT DOCUMENT was received  
+        const admin = await User.findOne({admin: true})
+        const email_ = admin.email
+        const owner_ = admin.username
+        const text_ = `A Lease Agreement Document has been uploaded by ${owner}, login to approve the document.`
+        const title_ =  `A Lease Agreement Document Uploaded By ${owner}`
+        await sendNotification(email_, owner_, text_, title_) 
+
+        res.redirect('/lease-agreement-form')
+    } catch(error) {
+        console.log(error)
+        if(req.file.filename){
+            await deleteFile(req.file.filename)
+        }
+        return res.redirect(`/upload-lease/${req.params.id}?error=An error was found`)
+    }
+}
+
+const approveForm = async (req, res) => {
+    //for all dashboard
+    const {noticeLast3, currentUser} = await allDash(req,res)
+
+    const user = await User.findById(req.params.id)
+    if(!user){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No user with the id ${req.params.id}`})
+    }
+
+    const file = await File.findOne({renter: user.username})
+    if(!file){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No File Found`})
+    }
+
+    if(!file.originalname_Renter){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No Renter File Found`})
+    }
+
+    res.render('approve',{noticeLast3, currentUser, stripePublickey: stripePublickey,user })
+}
+
+const PostapproveForm = async (req, res) => {
+
+    const user = await User.findById(req.params.id)
+    if(!user){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No user with the id ${req.params.id}`})
+    }
+
+    const file = await File.findOne({renter: user.username})
+    if(!file){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No File Found`})
+    }
+    if(!file.originalname_Renter){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No Renter File Found`})
+    }
+
+    file.approved = true
+    await file.save()
+
+    user.check_approve = true
+    await user.save()
+
+    //send notifcations TO RENTER THAT DOCUMENT has been approved 
+    const email = user.email
+    const owner = user.username
+    const text = `The Lease Agreement Document that you uploaded has been approved by the admin.`
+    const title =  'Lease Agreement Document Approved'
+    await sendNotification(email, owner, text, title) 
+
+    res.redirect('/')
+}
+
+const disapproveForm  = async (req, res) => {
+
+    const user = await User.findById(req.params.id)
+    if(!user){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No user with the id ${req.params.id}`})
+    }
+
+    const file = await File.findOne({renter: user.username})
+    if(!file){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No File Found`})
+    }
+    if(!file.originalname_Renter){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No Renter File Found`})
+    }
+
+    //send notifcations TO RENTER THAT DOCUMENT UPLOADED WAS DENIED
+    const email = user.email
+    const owner = user.username
+    const text = `The Lease Agreement Document that you uploaded was disapproved by the admin. Check the document again and sign appropraitely, then re-upload.`
+    const title =  'Lease Agreement Document Disapproved'
+    await sendNotification(email, owner, text, title) 
+
+    res.redirect('/')
+}
+
+const downloadRenterLease = async (req, res) => {
+
+    const user = await User.findById(req.params.id)
+    if(!user){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `No user with the id ${req.params.id}`})
+    }
+    const file = await File.findOne({renter: user.username}) 
+
+    if (!file) {
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `File Not Found`})
+    }
+    if(!file.path_Renter){
+        return res.render("error", {layout: noLayout, name: "Not Found",statusCode: 404, message: `File Not Found}`})
+    }
+    res.download(file.path_Renter); // Serve the document as a downloadable file
+
+}
+
 module.exports = {
     dashboard,
     purchase,
@@ -608,5 +809,10 @@ module.exports = {
     leasePage,
     leaseUploadPage,
     leaseUpload,
-    downloadLease
+    downloadLease,
+    leaseUpload_Renter,
+    approveForm,
+    PostapproveForm,
+    downloadRenterLease,
+    disapproveForm,
 }

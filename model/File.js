@@ -1,4 +1,5 @@
 
+const { boolean } = require('joi')
 const mongoose = require('mongoose')
 
 const fileSchema = mongoose.Schema({
@@ -14,6 +15,19 @@ const fileSchema = mongoose.Schema({
     },
     path: {
         type: String,
+    },
+    originalname_Renter: {
+        type: String,
+    },
+    filename_Renter: {
+        type: String,
+    },
+    path_Renter: {
+        type: String,
+    },
+    approved: {
+        type: Boolean,
+        default: false
     }
 
    

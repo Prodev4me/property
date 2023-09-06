@@ -1,0 +1,30 @@
+<div class="main-panel">
+    <div class="content-wrapper">
+        
+      <div class="col-md-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+                <% if (user.check_approve === true) { %>
+                    <p style="color: green;"><%= user.username %>'s Signed Lease Document Approved</p>
+                <% } else { %>
+              <h4 class="card-title">Approve <%= user.username %>'s Signed Lease Agreement Form</h4>
+              <p class="card-description">
+                Download the signed document by <%= user.username %> and check for it's authenticity and approve 
+              </p>
+              <form action="/approve/<%= user._id %>" method="POST">
+                  <a style="color: white;" class="btn btn-primary mr-2" href="/download-renter-lease/<%= user._id %>">Downlaod Document</a>
+                  <button type="submit" class="btn btn-light" >Approve</button>  
+              </form><br>
+              <form action="/disapprove/<%= user._id %>" method="POST">
+                <button  style="background-color: red; color: white;" type="submit" class="btn btn-light" >Disapprove</button>
+              </form>
+             <% } %>
+
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+
+  

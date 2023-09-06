@@ -1,39 +1,170 @@
 
+<% if (currentUser.admin == true ) { %>
 <div class="main-panel">
     <div class="content-wrapper">
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-            <h4 class="card-title">Upload Lease Agreement Form</h4>
-            <p class="card-description">
-              Upload the lease Agreement form signed by both the Landlord and Tenant (<%= user.username %>)
-            </p>
-            <p style="color: red;"><%= error %></p>
-            <form action="/upload-lease/<%= user._id %>" method="post"  enctype="multipart/form-data" class="forms-sample">
-                <div class="form-group">
-                    <label>PDF Only</label>
-                    <div class="input-group col-xs-12">
-                      <input type="file" id="fileInput" name="file" accept=".pdf" class="form-control file-upload-info" >
-                      <input type="text" disabled placeholder="<%= originalName %>" >
-                      <span class="input-group-append">
-                        <button class="file-upload-browse btn btn-primary" type="submit">Upload</button>
-                        <a class="btn btn-light" href="/">Cancel</a>
-                      </span>
-                    </div>
-                </div>
-            </form>
+
+            <% if (file_) { %>
+              <% if ( file_.approved === true) { %>
+              <p>RENTER UPLOADED DOCUMENT HAS BEEN APPROVED. NO UPLOADING ALLOWED AGAIN</p>
+
+              <% } else {%>
+              <h4 class="card-title">Upload Lease Agreement Form</h4>
+              <p class="card-description">
+                Upload the lease Agreement form signed by the Landlord
+              </p>
+              <p style="color: red;"><%= error %></p>
+              <form action="/upload-lease/<%= user._id %>" method="post"  enctype="multipart/form-data" class="forms-sample">
+                  <div class="form-group">
+                      <label>PDF Only</label>
+                      <div class="input-group col-xs-12">
+                        <input type="file" id="fileInput" name="file" accept=".pdf" class="form-control file-upload-info" >
+                        <input type="text" disabled placeholder="<%= originalName %>" >
+                        <span class="input-group-append">
+                          <button class="file-upload-browse btn btn-primary" type="submit">Upload</button>
+                          <a class="btn btn-light" href="/">Cancel</a>
+                        </span>
+                      </div>
+                  </div>
+              </form>
+              <% } %>
+            <% } else { %>
+              <h4 class="card-title">Upload Lease Agreement Form</h4>
+              <p class="card-description">
+                Upload the lease Agreement form signed by the Landlord
+              </p>
+              <p style="color: red;"><%= error %></p>
+              <form action="/upload-lease/<%= user._id %>" method="post"  enctype="multipart/form-data" class="forms-sample">
+                  <div class="form-group">
+                      <label>PDF Only</label>
+                      <div class="input-group col-xs-12">
+                        <input type="file" id="fileInput" name="file" accept=".pdf" class="form-control file-upload-info" >
+                        <input type="text" disabled placeholder="<%= originalName %>" >
+                        <span class="input-group-append">
+                          <button class="file-upload-browse btn btn-primary" type="submit">Upload</button>
+                          <a class="btn btn-light" href="/">Cancel</a>
+                        </span>
+                      </div>
+                  </div>
+              </form>
+          <% } %>
+
+            
           </div>
         </div>
       </div>
   </div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    
-     const fileName = "Your retrieved file name"; // Replace with your retrieved file name
-     const fileInput = document.getElementById('fileInput');
-     console.log(fileInput.outerHTML)
-   });
+  <% } else { %>
 
-  </script>
+    <% if (file_) { %>  
+      <% if (currentUser.admin == false && currentUser.username === user.username  && file_.approved !== true) { %>
+        <div class="main-panel">
+          <div class="content-wrapper">
+          <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Upload Lease Agreement Form</h4>
+                  <p class="card-description">
+                    Upload the lease Agreement form signed by both the Landlord and Tenant (<%= user.username %>)
+                  </p>
+                  <p style="color: red;"><%= error %></p>
+                  <form action="/upload-lease-renter/<%= user._id %>" method="post"  enctype="multipart/form-data" class="forms-sample">
+                      <div class="form-group">
+                          <label>PDF Only</label>
+                          <div class="input-group col-xs-12">
+                            <input type="file" id="fileInput" name="file" accept=".pdf" class="form-control file-upload-info" >
+                            <input type="text" disabled placeholder="<%= originalname_Renter %>" >
+                            <span class="input-group-append">
+                              <button class="file-upload-browse btn btn-primary" type="submit">Upload</button>
+                              <a class="btn btn-light" href="/">Cancel</a>
+                            </span>
+                          </div>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+        </div>
+        </div>
+
+        <% } else if (currentUser.username === user.username && file_.approved === true) { %>
+          <div class="main-panel">
+            <div class="content-wrapper">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <p>YOUR UPLOADED DOCUMENT HAS BEEN APPROVED. NO UPLOADING ALLOWED AGAIN</p>
+                  </div>
+                </div>
+              </div>
+          </div>
+          </div>
+        <% } else { %>
+
+          <div class="main-panel">
+            <div class="content-wrapper">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <p>YOU AREN'T ALLOWED TO VIEW THIS PAGE</p>
+                  </div>
+                </div>
+              </div>
+          </div>
+          </div>
+      <% } %>
+    <% } else {%>
+
+      <% if (currentUser.admin == false && currentUser.username === user.username) { %>
+        <div class="main-panel">
+          <div class="content-wrapper">
+          <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Upload Lease Agreement Form</h4>
+                  <p class="card-description">
+                    Upload the lease Agreement form signed by both the Landlord and Tenant (<%= user.username %>)
+                  </p>
+                  <p style="color: red;"><%= error %></p>
+                  <form action="/upload-lease-renter/<%= user._id %>" method="post"  enctype="multipart/form-data" class="forms-sample">
+                      <div class="form-group">
+                          <label>PDF Only</label>
+                          <div class="input-group col-xs-12">
+                            <input type="file" id="fileInput" name="file" accept=".pdf" class="form-control file-upload-info" >
+                            <input type="text" disabled placeholder="<%= originalname_Renter %>" >
+                            <span class="input-group-append">
+                              <button class="file-upload-browse btn btn-primary" type="submit">Upload</button>
+                              <a class="btn btn-light" href="/">Cancel</a>
+                            </span>
+                          </div>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+        </div>
+        </div>
+        <% } else { %>
+
+          <div class="main-panel">
+            <div class="content-wrapper">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <p>YOU AREN'T ALLOWED TO VIEW THIS PAGE</p>
+                  </div>
+                </div>
+              </div>
+          </div>
+          </div>
+       <% } %>
+
+    
+    <% } %>
+
+
+  <% } %>

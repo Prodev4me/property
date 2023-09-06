@@ -27,8 +27,8 @@ const {dashboard, purchase, changeNotice, addRent, postAddRent, addProp, postAdd
     postEditRent,
     deleteRent,
     editProp,
-    postEditProp,leaseUpload,downloadLease,
-    deleteProp, rentsearch, deletepage, leasePage,leaseUploadPage} = require('../controllers/main')
+    postEditProp,leaseUpload,downloadLease,leaseUpload_Renter, approveForm,disapproveForm,
+    deleteProp, rentsearch, deletepage, leasePage,leaseUploadPage, PostapproveForm, downloadRenterLease} = require('../controllers/main')
 
 const {authAdmin} = require('../middleware/authentication')
 
@@ -53,7 +53,13 @@ router.post('/', rentsearch)
 router.get('/delete/:id',authAdmin, deletepage)
 router.get('/lease-agreement-form', leasePage)
 router.get('/download-lease/:id', downloadLease)
-router.get('/upload-lease/:id', authAdmin, leaseUploadPage)
+router.get('/upload-lease/:id', leaseUploadPage)
 router.post('/upload-lease/:id', authAdmin, upload.single('file'), leaseUpload)
+router.post('/upload-lease-renter/:id', upload.single('file'), leaseUpload_Renter)
 
+router.get('/approve/:id', authAdmin, approveForm)
+router.post('/approve/:id', authAdmin, PostapproveForm)
+
+router.post('/disapprove/:id', disapproveForm)
+router.get('/download-renter-lease/:id', downloadRenterLease)
 module.exports = router

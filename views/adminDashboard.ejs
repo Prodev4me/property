@@ -267,7 +267,21 @@
                       <td><%= user.pendingRent %></td>
                       <td><%= user.dueRent %></td>
                       <td><%= user.paidRent %></td>
+
+                      <% if (user.check_approve !== true) { %>
                       <td class="font-weight-medium"><a style="color: blue;" href="/upload-lease/<%= user._id %>">Upload</a></td>
+                      <% } else { %>
+                      <td class="font-weight-medium">-</td>
+                      <% } %>
+
+                      <% if (user.check_approve === true) { %>
+                      <td class="font-weight-medium"><a style="color: green;">Document Approved</a></td>
+                      <% } else if (user.check_file === true) { %>
+                      <td class="font-weight-medium"><a style="color: blue;" href="/approve/<%= user._id %>">Approve Document</a></td>
+                      <% } else { %>
+                      <td class="font-weight-medium">No Document</td>
+                      <% } %>
+
                       <td class="font-weight-medium"><a style="color: red;" href="/delete/<%= user._id %>">Delete</a></td>
                     </tr>
                     <% }) %>

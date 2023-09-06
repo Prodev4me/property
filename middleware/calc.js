@@ -68,7 +68,8 @@ async function sendNotification(email, owner, text, title) {
 
         <h3>Hello ${owner}, </h3> <br>
 
-        <p>${text}</p><br><br>
+        <p>${text}</p>
+        <p>Login to your account here: <a href="${url}"> ${url} </a> </p><br><br>
 
         <p>Sincerely,</p>
         <p>From VisualGreatness.</p>

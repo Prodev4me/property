@@ -46,6 +46,14 @@ const UserSchema = new Schema({
     paidRent:{
         type:Number,
         default: 0
+    },
+    check_file: {
+        type: Boolean,
+        default: false
+    },
+    check_approve: {
+        type: Boolean,
+        default: false
     }
 
 

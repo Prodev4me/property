@@ -41,8 +41,15 @@
             <p>Email: omotayodaib1992@gmail.com</p>
             <p>Telephone: 682-360-5095</p>
             <p><b>Zelle – 682-360-5095</b></p>
-            <br>
-            <a style="color: white;" class="btn btn-primary mr-2" href="/download-lease/<%= currentUser._id %>">Download Signed Form</a>
+            <br><br>
+            
+            <% if (file.approved === true) { %>
+                <a style="color: white;" class="btn btn-primary mr-2" href="/download-renter-lease/<%= currentUser._id %>">Download Signed Lease Agreement Form</a>
+            <% } else { %>
+                <p>Download the Lease Agreement Form signed by the Landlord and Sign in the appropriate place in the document and upload after signing.</p><br>
+                <a style="color: white;" class="btn btn-primary mr-2" href="/download-lease/<%= currentUser._id %>">Download Lease Agreement Form</a>
+                <a style="color: white;" class="btn btn-primary mr-2" href="/upload-lease/<%= currentUser._id %>">Upload Signed Form</a>
+            <% } %>
         </div>
         </div>
     </div>
