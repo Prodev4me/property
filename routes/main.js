@@ -8,7 +8,7 @@ const User = require('../model/User')
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: async function (req, file, cb) {      
-      cb(null, '../uploads/'); // Destination folder for uploaded files
+      cb(null, './uploads/'); // Destination folder for uploaded files
     },
     filename: async function (req, file, cb) {
       const user = await User.findById(req.params.id)
