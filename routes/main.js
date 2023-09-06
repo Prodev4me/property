@@ -60,6 +60,6 @@ router.post('/upload-lease-renter/:id', upload.single('file'), leaseUpload_Rente
 router.get('/approve/:id', authAdmin, approveForm)
 router.post('/approve/:id', authAdmin, PostapproveForm)
 
-router.post('/disapprove/:id', disapproveForm)
+router.post('/disapprove/:id',authAdmin, disapproveForm)
 router.get('/download-renter-lease/:id', downloadRenterLease)
 module.exports = router
