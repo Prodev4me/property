@@ -27,9 +27,9 @@ var stripeHandler = StripeCheckout.configure({
             })
         }).then(response => {
             if (response.ok) {
-            window.location.href = 'https://property-site.up.railway.app/';
+            window.location.href = '/';
             } else {
-                window.location.href = 'https://property-site.up.railway.app/?errorPayment=There was an error with the payment';
+                window.location.href = '/?errorPayment=There was an error with the payment';
                 console.error('Error:', response.status);
             }
         })

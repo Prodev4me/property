@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer')
 const Notice = require('../model/notifications')
 require('dotenv').config()
 
-const url = 'https://property-site.up.railway.app'
+const url = 'http://13.54.207.79:3000'
 
 const Cost = async (status, owner) => {
 
@@ -73,7 +73,7 @@ async function sendNotification(email, owner, text, title) {
 
         <p>Sincerely,</p>
         <p>From VisualGreatness.</p>
-        <a class="navbar-brand brand-logo-mini" style="size: 40px;" href="https://property-site.up.railway.app"><img src="https://i.ibb.co/6BH7h6Q/20230904-062051-0000-removebg-preview.png" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" style="size: 40px;" href="${url}"><img src="https://i.ibb.co/6BH7h6Q/20230904-062051-0000-removebg-preview.png" alt="logo"/></a>
         
     `;
 

@@ -19,6 +19,8 @@ const {allDash} = require('./main')
 const Property = require('../model/Property')
 const stripePublickey = process.env.STRIPE_PUBLIC_KEY
 
+const File = require('../model/File')
+
 
 //generate Page
 const generate = async (req, res) => {
@@ -308,6 +310,9 @@ const deleteUser = async (req, res) => {
 
     // delete all rents the user has
     const rent = await Property.deleteMany({owner: user.username})
+
+    //delete files elated to user
+    const files = await File.deleteMany({renter: user.username})
 
     res.redirect('/')
 
