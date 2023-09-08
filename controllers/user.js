@@ -15,7 +15,7 @@ const mongoose = require('mongoose')
 const generateToken = require('../middleware/token')
 
 const {authMiddleware} = require('../middleware/authentication.js')
-const {allDash} = require('./main')
+const {allDash, deleteFile} = require('./main')
 const Property = require('../model/Property')
 const stripePublickey = process.env.STRIPE_PUBLIC_KEY
 
@@ -312,7 +312,17 @@ const deleteUser = async (req, res) => {
     const rent = await Property.deleteMany({owner: user.username})
 
     //delete files elated to user
+    const file = await File.findOne({renter: user.username})
     const files = await File.deleteMany({renter: user.username})
+
+    //delete files in folder
+    if(file){
+        await deleteFile(file.filename)
+        if(file.filename_Renter){
+            await deleteFile(file.filename_Renter)
+        }
+    }
+    
 
     res.redirect('/')
 

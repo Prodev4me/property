@@ -554,7 +554,7 @@ const leaseUploadPage = async(req, res)=>{
 const deleteFile = async (filename) => {
 
     //delete uploaded file
-    const filePath = `uploads/${filename}`; // Replace with your file path
+    const filePath = `upload/${filename}`; // Replace with your file path
 
     // Use the fs.unlink method to delete the file
     fs.unlink(filePath, (err) => {
@@ -815,4 +815,5 @@ module.exports = {
     PostapproveForm,
     downloadRenterLease,
     disapproveForm,
+    deleteFile,
 }
