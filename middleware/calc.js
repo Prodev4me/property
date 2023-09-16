@@ -51,8 +51,6 @@ const AllCost = async (status) => {
 }
 
 
-
-
 // send email
 async function sendNotification(email, owner, text, title) {
 
@@ -81,8 +79,11 @@ async function sendNotification(email, owner, text, title) {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth:{
-            user: "info.tekcify",
+            user: "info.visualgreatness",
             pass: process.env.EMAIL_PASSWORD
+        },
+        tls: {
+        rejectUnauthorized: false
         }
     })
 

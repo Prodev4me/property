@@ -261,7 +261,8 @@
                   <tbody>
                     <% users.forEach(user => { %>
                     <tr>
-                      <td><%= user.username %></td>
+                      <% if (user.admin === false) { %>
+                        <td><%= user.username %></td>
                       <td><%= user.email %></td>
                       <td><%= user.ownedProperty %></td>
                       <td><%= user.pendingRent %></td>
@@ -283,6 +284,8 @@
                       <% } %>
 
                       <td class="font-weight-medium"><a style="color: red;" href="/delete/<%= user._id %>">Delete</a></td>
+                    
+                      <% } %>
                     </tr>
                     <% }) %>
                     
